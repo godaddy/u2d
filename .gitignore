@@ -1,0 +1,9 @@
+# Env
+.idea
+
+# Build
+coverage
+dist
+
+# Node
+node_modules
