@@ -114,14 +114,14 @@ u2d({ /* options */ }).then(({ skips, infos, errors, warnings }) => {
 A check is a semver range to run against an found version. A check must define a `pass` range, and optionally a
 `fail` range and/or a `help` description.
 
-Example `node` check, will pass on 16+, warn on 10-15, and fail on <10.
+Example `node` check, will pass on 16+, warn on 14-15, and fail on <12.
 
 ```json
 {
   "engines": {
     "node": {
       "pass": ">=16",
-      "fail": "<10",
+      "fail": "<12",
       "help": "https://letmegooglethat.com/?q=update+node"
     }
   }

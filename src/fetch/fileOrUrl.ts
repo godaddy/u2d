@@ -1,8 +1,11 @@
+import { createRequire } from 'module';
+
 import fetch from 'node-fetch';
 
 import isURL from '../assert/url';
 
 const Cache = new Map();
+const require = createRequire(import.meta.url);
 
 export default async function fetchFileOrURL(fileOrURL: string): Promise<any> {
   // Get Cache
@@ -21,7 +24,7 @@ export default async function fetchFileOrURL(fileOrURL: string): Promise<any> {
       }
       result = await res.json();
     } else {
-      const exports = await import(fileOrURL);
+      const exports = require(fileOrURL);
       result = exports.default || exports || {};
     }
     // Set Cache

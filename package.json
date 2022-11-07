@@ -1,6 +1,6 @@
 {
   "name": "u2d",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "bin": "./bin/cli.js",
   "main": "./dist/main.js",
   "module": "./dist/main.mjs",
@@ -36,10 +36,12 @@
     "watch": "npm run tsup -- --watch",
     "types": "tsc --noEmit",
     "lint": "eslint --fix --ext .js,.ts \"./src/**\" \"./test/**\"",
-    "unit": "jest ./test/unit",
+    "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest",
+    "unit": "npm run jest -- ./test/unit",
+    "integration": "npm run jest -- ./test/integration",
     "coverage": "npm run unit -- --coverage",
     "test": "npm-run-all lint --parallel types coverage",
-    "prepublishOnly": "npm-run-all --aggregate-output lint --parallel types unit build"
+    "prepublishOnly": "npm-run-all --aggregate-output lint --parallel types unit build --serial integration"
   },
   "dependencies": {
     "chalk": "^4.1.2",
@@ -59,6 +61,7 @@
     "@types/semver": "^7.3.9",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
+    "cross-env": "^7.0.3",
     "enquirer": "^2.3.6",
     "eslint": "^8.14.0",
     "eslint-plugin-import": "^2.26.0",
@@ -76,7 +79,12 @@
       "./src/**"
     ],
     "globals": {
+      "extensionsToTreatAsEsm": [
+        ".ts",
+        ".js"
+      ],
       "ts-jest": {
+        "useESM": true,
         "tsconfig": {
           "allowJs": true,
           "importHelpers": true,

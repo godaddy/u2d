@@ -1,8 +1,10 @@
 import path from 'path';
 
+import { jest } from '@jest/globals';
+
 import fetchConfig from '../../../src/fetch/config';
 
-const mockConfigPkg = jest.requireActual('../../mocks/config/package.json');
+const mockConfigPkg: any = jest.requireActual('../../mocks/config/package.json');
 
 const cwd = path.resolve('./test/mocks/config');
 
