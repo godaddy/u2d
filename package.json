@@ -1,6 +1,6 @@
 {
   "name": "u2d",
-  "version": "1.0.0",
+  "version": "2.0.0-0",
   "bin": "./bin/cli.js",
   "main": "./dist/main.js",
   "module": "./dist/main.mjs",
