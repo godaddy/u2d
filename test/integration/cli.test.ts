@@ -31,8 +31,9 @@ describe('config', () => {
       cwd: process.cwd(),
       tty: expect.any(Boolean),
       engines: {
-        node: {
-          pass: '>=16.0.0'
+        nvm: {
+          pass: '>=16.0.0 <17.0.0-0',
+          fail: expect.any(Object)
         },
         npm: {
           pass: '>=8.0.0'
