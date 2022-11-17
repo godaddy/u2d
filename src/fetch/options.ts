@@ -67,14 +67,14 @@ export default async function fetchOptions(options: Partial<Options.Input> = {},
   }
 
   // Import local .nvmrc
-  try {
-    const raw = await fs.promises.readFile(path.join(cwd, '.nvmrc'), 'utf-8');
-    if (!config.engines) {
-      config.engines = {};
+  if (!config.engines || !('nvm' in config.engines)) {
+    try {
+      const raw = await fs.promises.readFile(path.join(cwd, '.nvmrc'), 'utf-8');
+      config.engines ??= {};
+      config.engines.nvm = { pass: raw.trim(), fail: true };
+    } catch {
+      // Ignore
     }
-    config.engines.nvm = { pass: raw.trim(), fail: true };
-  } catch {
-    // Ignore
   }
 
   return {
