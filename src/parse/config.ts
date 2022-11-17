@@ -1,4 +1,5 @@
 import path from 'path';
+import { createRequire } from 'module';
 
 import fetchFileOrURL from '../fetch/fileOrUrl';
 import isURL from '../assert/url';
@@ -6,6 +7,8 @@ import isURL from '../assert/url';
 import getURL from './url';
 import getFile from './file';
 import getMessage from './message';
+
+const require = createRequire(import.meta.url);
 
 export default async function getConfig({ extends: ext, ...config }: { extends?: string }, from: string) {
   if (ext) {
@@ -20,7 +23,7 @@ export default async function getConfig({ extends: ext, ...config }: { extends?:
       ext = require.resolve(getFile(ext, from));
     } else if (!path.isAbsolute(ext)) {
       // Node Module
-      ext = require.resolve(ext, { paths: [path.basename(from)] });
+      ext = require.resolve(ext, { paths: [from] });
     }
     try {
       config = Object.assign(await getConfig(await fetchFileOrURL(ext), ext), config);

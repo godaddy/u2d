@@ -1,41 +1,21 @@
 import path from 'path';
-
-import { jest } from '@jest/globals';
+import { spawnSync } from 'child_process';
 
 import * as defaults from '../../src/constants/defaults';
 
-let originalArgv;
+const cwd = process.cwd();
 
-beforeEach(() => {
-  originalArgv = process.argv;
-  jest.setTimeout(1000 * 30);
-  jest.resetModules();
-});
-
-afterEach(() => {
-  process.argv = originalArgv;
-});
-
-const getCLIOutput = (args = []) => {
-  let output = '';
-  const waitForExit = new Promise(resolve => {
-    jest.spyOn(process, 'exit').mockImplementation(resolve as any);
+const spawnCLISync = (args = []) => {
+  return spawnSync('npx', ['.', ...args], {
+    cwd,
+    shell: true,
+    stdio: 'pipe',
+    encoding: 'utf8'
   });
-  [[console, 'log'], [console, 'warn'], [process.stdout, 'write']].forEach(([obj, method]) => {
-    // @ts-ignore
-    jest.spyOn(obj, method).mockImplementation((data) => {
-      output += data;
-    });
-  });
-  process.argv = originalArgv.slice(0, 2).concat(args);
-  return Promise.all([
-    import('../../src/cli'),
-    waitForExit
-  ]).then(() => output);
 };
 
 describe('config', () => {
-  const getConfig = (args = []) => getCLIOutput(['--show-config'].concat(args)).then((output) => JSON.parse(output));
+  const getConfig = (args = []) => JSON.parse(spawnCLISync(['--show-config'].concat(args)).stdout);
 
   test('applies u2d defaults', async () => {
     const config = await getConfig();
@@ -85,8 +65,8 @@ describe('config', () => {
 });
 
 describe('run', () => {
-  test('passes', async () => {
-    const output = await getCLIOutput(['--local']);
+  test('passes', () => {
+    const output = spawnCLISync(['--local']).stderr;
     expect(output).toContain('0 errors');
   });
 });
