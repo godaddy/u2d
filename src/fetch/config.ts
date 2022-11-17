@@ -4,7 +4,7 @@ import { cosmiconfig } from 'cosmiconfig';
 
 import getConfig from '../parse/config';
 
-async function fetchConfig(config: string | {}, cwd: string) {
+export default async function fetchConfig(config: string | {}, cwd: string) {
   if (!config) {
     const found = await cosmiconfig('u2d').search(cwd);
     return found
@@ -18,5 +18,3 @@ async function fetchConfig(config: string | {}, cwd: string) {
   }
   return getConfig({ ...config }, cwd);
 }
-
-export default fetchConfig;
