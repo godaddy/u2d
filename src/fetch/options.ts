@@ -8,19 +8,17 @@ import getManager from '../parse/manager';
 import envs from '../constants/envs';
 import levels from '../constants/levels';
 import managers from '../constants/managers';
-import * as defaults from '../constants/defaults';
+import * as _defaults from '../constants/defaults';
 
 import fetchConfig from './config';
 
 import type { Config, Options } from '../types';
 
-export default async function fetchOptions(options: Partial<Options.Input> = {}): Promise<Options.Export> {
-  let config: Partial<Config.Input> = await fetchConfig(options.config, getDir(options.cwd || defaults.cwd, defaults.cwd));
+export default async function fetchOptions(options: Partial<Options.Input> = {}, defaults: Partial<Options.Base> = _defaults): Promise<Options.Export> {
+  const cwd = getDir(options.cwd || defaults.cwd, defaults.cwd);
+  let config: Partial<Config.Input> = await fetchConfig(options.config, cwd);
 
-  // @ts-ignore
-  // eslint-disable-next-line import/namespace
-  const getValue = (key: string): any => options[key] ?? config[key] ?? defaults[key];
-  const cwd = getDir(getValue('cwd'), defaults.cwd);
+  const getValue = (key: keyof Options.Input): any => options[key] ?? config[key] ?? defaults[key];
 
   // Validate env
   const env = getValue('env');
@@ -63,6 +61,17 @@ export default async function fetchOptions(options: Partial<Options.Input> = {})
       const pkg = JSON.parse(raw);
       config.engines = Object.assign({}, pkg.engines, config.engines);
       config.packages = Object.assign({}, pkg.devDependencies, pkg.dependencies, pkg.peerDependencies, config.packages);
+    } catch {
+      // Ignore
+    }
+  }
+
+  // Import local .nvmrc
+  if (!config.engines || !('nvm' in config.engines)) {
+    try {
+      const raw = await fs.promises.readFile(path.join(cwd, '.nvmrc'), 'utf-8');
+      config.engines ??= {};
+      config.engines.nvm = { pass: raw.trim(), fail: true };
     } catch {
       // Ignore
     }

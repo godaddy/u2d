@@ -1,30 +1,12 @@
-import getTasks from './tasks/index';
+import checkAction from './actions/check';
 import fetchOptions from './fetch/options';
 
-import type { Context, Options, Results } from './types';
+import type { Options, Results } from './types';
 
-export default async function u2d(options?: Partial<Options.Input>): Promise<Results> {
-  const ctx: Context = {
-    ...await fetchOptions(options),
-    skips: [],
-    infos: [],
-    errors: [],
-    warnings: []
-  };
-  const tasks = getTasks(ctx);
-  try {
-    await tasks.run();
-  } catch (err) {
-    if (!ctx.bail) {
-      throw err;
-    }
-  }
-  return {
-    skips: ctx.skips,
-    infos: ctx.infos,
-    errors: ctx.errors,
-    warnings: ctx.warnings
-  };
+async function check(options?: Partial<Options.Input>): Promise<Results> {
+  return await checkAction(await fetchOptions(options));
 }
 
+export { check };
+export default check;
 export * from './types';

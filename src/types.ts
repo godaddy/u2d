@@ -15,12 +15,16 @@ export const Manager = {
   YARN: 'yarn'
 } as const;
 
+export type ManagerType = typeof Manager[keyof typeof Manager];
+
 export const Environment = {
   GLOBAL: 'global',
   LOCAL: 'local',
   PROD: 'prod',
   DEV: 'dev'
 } as const;
+
+export type EnvironmentType = typeof Environment[keyof typeof Environment]
 
 export namespace Check {
   export interface Export {
@@ -69,8 +73,8 @@ export namespace Options {
     local: boolean;
     depth: string | number;
     log: keyof typeof Level;
-    env: typeof Environment[keyof typeof Environment];
-    manager: typeof Manager[keyof typeof Manager];
+    env: EnvironmentType;
+    manager: ManagerType;
   }
 
   export interface Input extends Base {

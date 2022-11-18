@@ -1,14 +1,14 @@
 import path from 'path';
 
 import exists from '../assert/exists';
-import { Manager } from '../types';
+import { Manager, ManagerType } from '../types';
 
-export default function getManager(cwd: string) {
-  let manager: typeof Manager[keyof typeof Manager] = Manager.NPM;
+export default function getManager(cwd: string): ManagerType {
   if (exists(path.join(cwd, 'yarn.lock'))) {
-    manager = Manager.YARN;
-  } else if (exists(path.join(cwd, 'pnpm-lock.yaml'))) {
-    manager = Manager.PNPM;
+    return Manager.YARN;
   }
-  return manager;
+  if (exists(path.join(cwd, 'pnpm-lock.yaml'))) {
+    return Manager.PNPM;
+  }
+  return Manager.NPM;
 }
