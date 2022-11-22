@@ -1,10 +1,9 @@
-import { program } from 'commander';
-
+import { program } from './commands/base';
 import check from './commands/check';
 
 program
   .name('u2d')
   .showHelpAfterError(true)
   .allowExcessArguments(false)
-  .addCommand(check.copyInheritedSettings(program), { isDefault: true })
+  .addCommand(check, { isDefault: true })
   .parseAsync();
