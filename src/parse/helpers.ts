@@ -9,12 +9,12 @@ import type { Context } from '../types';
 
 export default function getHelpers(ctx: Context, task: ListrTaskWrapper<unknown, typeof ListrRenderer>) {
   const { level, skips, infos, warnings, errors } = ctx;
-  const getResult = message => getTaskResult(task, message);
+  const getResult = (message, meta?) => getTaskResult(task, message, meta);
   return {
-    skip(msg: string) {
+    skip(msg: string, meta?) {
       if (level >= Level.debug) {
         // Capture
-        skips.push(getResult(msg));
+        skips.push(getResult(msg, meta));
 
         // Display
         task.skip(task.title + sep + msg);
@@ -23,10 +23,10 @@ export default function getHelpers(ctx: Context, task: ListrTaskWrapper<unknown,
         task.title = '';
       }
     },
-    info(msg: string = '') {
+    info(msg: string = '', meta?) {
       if (level >= Level.info) {
         // Capture
-        infos.push(getResult(msg));
+        infos.push(getResult(msg, meta));
 
         // Display
         task.title = task.title + sep + msg;
@@ -35,10 +35,10 @@ export default function getHelpers(ctx: Context, task: ListrTaskWrapper<unknown,
         task.title = '';
       }
     },
-    warn(msg: string) {
+    warn(msg: string, meta?) {
       if (level >= Level.warn) {
         // Capture
-        warnings.push(getResult(new RangeError(msg)));
+        warnings.push(getResult(new RangeError(msg), meta));
 
         // Display hack
         task.title = task.title + sep + msg + warning;
@@ -54,7 +54,7 @@ export default function getHelpers(ctx: Context, task: ListrTaskWrapper<unknown,
         task.title = '';
       }
     },
-    error(msg: unknown) {
+    error(msg: unknown, meta?) {
       let error;
       if (typeof msg === 'string') {
         // Check failed, generate error
@@ -64,7 +64,7 @@ export default function getHelpers(ctx: Context, task: ListrTaskWrapper<unknown,
         error = msg instanceof RangeError || (msg instanceof Error && level >= Level.debug)
           ? msg
           : new Error('failed');
-        errors.push(getResult(error));
+        errors.push(getResult(error, meta));
 
         // Display
         task.title = task.title + sep + error.message;

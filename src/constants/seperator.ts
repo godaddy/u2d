@@ -1,3 +1,6 @@
 import tty from './tty';
 
-export default tty ? ' ' : ' › ';
+export const ttySep = ' ';
+export const nonTtySep = ' › ';
+
+export default tty ? ttySep : nonTtySep;

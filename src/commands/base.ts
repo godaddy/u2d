@@ -1,23 +1,15 @@
 import { Command } from 'commander';
 
-import { showConfig } from '../options';
 import getMessage from '../parse/message';
 import fetchOptions from '../fetch/options';
 import * as defaults from '../constants/cliDefaults';
+import * as Options from '../options';
 
 import type { CommandOptions } from 'commander';
 
 class BaseCommand extends Command {
-  private _showConfig?;
-
   addCommand(cmd: Command, opts?: CommandOptions): this {
     return super.addCommand(cmd.copyInheritedSettings(program), opts);
-  }
-
-  addShowConfig(parser?): this {
-    this.addOption(showConfig);
-    this._showConfig = parser || true;
-    return this;
   }
 
   action(fn: (...args: any[]) => (void | Promise<void>)): this {
@@ -25,10 +17,11 @@ class BaseCommand extends Command {
       let options;
       try {
         options = await fetchOptions(opts, defaults);
-        if (opts.showConfig && this._showConfig) {
+        if (opts.showConfig) {
           // Format data
-          if (typeof this._showConfig === 'function') {
-            options = await this._showConfig(options);
+          delete options.provider;
+          if (options.depth === Infinity) {
+            options.depth = Options.depth.defaultValueDescription;
           }
           // Print and exit
           process.stdout.write(JSON.stringify(options, null, '  ') + '\n');

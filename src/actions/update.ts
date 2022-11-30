@@ -1,17 +1,17 @@
 import { Listr } from 'listr2';
 
-import { Action } from '../types';
-import getFn from '../parse/fn';
-import eng from '../tasks/eng';
 import pkg from '../tasks/pkg';
+import update from '../tasks/update';
+import getFn from '../parse/fn';
 import getOptions from '../parse/listr';
+import { Action } from '../types';
 
 import type { Context, Options, Results } from '../types';
 
-export default async function check(options: Options.Export): Promise<Results> {
+export default async function updateAction(options: Options.Export): Promise<Results> {
   const ctx: Context = {
     ...options,
-    action: Action.CHECK,
+    action: Action.UPDATE,
     skips: [],
     infos: [],
     errors: [],
@@ -19,9 +19,12 @@ export default async function check(options: Options.Export): Promise<Results> {
   };
   try {
     const tasks = new Listr([
-      getFn(eng, ctx),
-      getFn(pkg, ctx)
-    ], getOptions(ctx));
+      getFn(pkg, ctx),
+      getFn(update, ctx)
+    ], {
+      ...getOptions(ctx),
+      concurrent: false
+    });
     await tasks.run();
   } catch (err) {
     if (!ctx.bail) {

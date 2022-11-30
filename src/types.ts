@@ -24,7 +24,14 @@ export const Environment = {
   DEV: 'dev'
 } as const;
 
-export type EnvironmentType = typeof Environment[keyof typeof Environment]
+export type EnvironmentType = typeof Environment[keyof typeof Environment];
+
+export const Action = {
+  CHECK: 'check',
+  UPDATE: 'update'
+} as const;
+
+export type ActionType = typeof Action[keyof typeof Action];
 
 export namespace Check {
   export interface Export {
@@ -66,6 +73,13 @@ export namespace Options {
 
   export type Spawn = (cmd: string, args?: Array<string>, options?: execa.Options) => execa.ExecaChildProcess;
 
+  export interface Provider {
+    id?: ManagerType;
+    dirs(depth: Base['depth']);
+    update(pkgs: Array<string>);
+    view(pkg: string);
+  }
+
   export interface Base {
     cwd: string,
     bail: boolean;
@@ -85,6 +99,7 @@ export namespace Options {
     level: Level;
     spawn: Spawn;
     tty: boolean;
+    provider?: Provider;
   }
 }
 
@@ -92,6 +107,7 @@ export interface Result {
   name: string,
   title: string,
   message: string
+  meta: { [key: string]: any }
 }
 
 export interface Results {
@@ -102,5 +118,5 @@ export interface Results {
 }
 
 export interface Context extends Options.Export, Results {
-
+  action: ActionType
 }

@@ -1,17 +1,16 @@
 import chalk from 'chalk';
 import { figures } from 'listr2';
 
-import check from '../actions/check';
+import update from '../actions/update';
 import * as Options from '../options';
 
 import { Command } from './base';
 
-const command = new Command('check')
-  .description('run version checks')
+const command = new Command('update')
+  .description('auto update dependencies')
   .addOption(Options.cwd)
   .addOption(Options.config)
   .addOption(Options.env)
-  .addOption(Options.depth)
   .addOption(Options.manager)
   .addOption(Options.log)
   .addOption(Options.bail)
@@ -19,13 +18,20 @@ const command = new Command('check')
   .addOption(Options.local)
   .addOption(Options.showConfig)
   .action(async (options) => {
-    const { errors, warnings } = await check(options);
+    const { errors, warnings } = await update(options);
     const errorCount = errors.length;
     if (!options.silent) {
-      const warningCount = warnings.length;
-      const problemCount = errorCount + warningCount;
+      let warningCount = warnings.length;
+      let updateCount = 0;
+      warnings.forEach(warning => {
+        if (warning.meta?.update) {
+          updateCount++;
+          warningCount--;
+        }
+      });
+      const problemCount = errorCount + warningCount + updateCount;
       if (problemCount) {
-        const message = `${ problemCount } problems (${ errorCount } errors, ${ warningCount } warnings)`;
+        const message = `${ problemCount } problems (${ errorCount } errors, ${ warningCount } warnings, ${ updateCount } updates)`;
         if (errorCount > 0) {
           console.error(`\n${ chalk.red(`${ figures.cross } ${ message }`) }`);
         } else {

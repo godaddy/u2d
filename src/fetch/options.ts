@@ -9,6 +9,7 @@ import envs from '../constants/envs';
 import levels from '../constants/levels';
 import managers from '../constants/managers';
 import * as _defaults from '../constants/defaults';
+import getProvider from '../parse/provider';
 
 import fetchConfig from './config';
 
@@ -77,7 +78,7 @@ export default async function fetchOptions(options: Partial<Options.Input> = {},
     }
   }
 
-  return {
+  const parsed: Options.Export = {
     cwd,
     env,
     log,
@@ -92,4 +93,6 @@ export default async function fetchOptions(options: Partial<Options.Input> = {},
     engines: getChecks(config.engines),
     packages: getChecks(config.packages)
   };
+  parsed.provider = getProvider(manager, parsed);
+  return parsed;
 }
