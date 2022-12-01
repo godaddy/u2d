@@ -10,16 +10,6 @@ export default class implements Options.Provider {
     this._options = options;
   }
 
-  private spawn(args) {
-    const key = args.join('|');
-    if (this._cache.has(key)) {
-      return this._cache.get(key);
-    }
-    const value = this._options.spawn('npm', args, { reject: false });
-    this._cache.set(key, value);
-    return value;
-  }
-
   public dirs(depth = this._options.depth) {
     const { env } = this._options;
     const args = ['ls', '--parseable', `--depth=${ depth }`, env === Environment.LOCAL ? '--all' : `--${ env }`];
@@ -49,15 +39,23 @@ export default class implements Options.Provider {
   }
 
   public update(pkgs) {
+    const { env, dryRun } = this._options;
     const args = ['install', ...pkgs, '--no-fund', '--no-audit', '--no-progress', '--loglevel=error'];
-    if (this._options.env === Environment.GLOBAL) {
+    if (env === Environment.GLOBAL) {
       args.push('--global');
     }
-    return this.spawn(args).then(({ stdout, exitCode}) => {
+    if (dryRun) {
+      args.push('--dry-run');
+    }
+    return this.spawn(args).then(({ stdout, exitCode }) => {
       if (exitCode > 0) {
         throw Error('failed install');
       }
-      return stdout.trim();
+      let output = stdout.trim();
+      if (dryRun) {
+        output += ' (dry-run)';
+      }
+      return output;
     });
   }
 
@@ -69,5 +67,15 @@ export default class implements Options.Provider {
       }
       return JSON.parse(stdout);
     });
+  }
+
+  private spawn(args) {
+    const key = args.join('|');
+    if (this._cache.has(key)) {
+      return this._cache.get(key);
+    }
+    const value = this._options.spawn('npm', args, { reject: false });
+    this._cache.set(key, value);
+    return value;
   }
 }

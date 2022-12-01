@@ -86,6 +86,7 @@ export namespace Options {
     silent: boolean;
     local: boolean;
     depth: string | number;
+    dryRun: boolean;
     log: keyof typeof Level;
     env: EnvironmentType;
     manager: ManagerType;

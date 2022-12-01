@@ -16,6 +16,7 @@ const command = new Command('update')
   .addOption(Options.bail)
   .addOption(Options.silent)
   .addOption(Options.local)
+  .addOption(Options.dryRun)
   .addOption(Options.showConfig)
   .action(async (options) => {
     const { errors, warnings } = await update(options);
