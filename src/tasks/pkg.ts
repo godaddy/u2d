@@ -44,7 +44,14 @@ export default {
                   .readFile(path.resolve(dir, 'package.json'), 'utf-8')
                   .then((raw: string) => [path.relative(ctx.cwd, dir), JSON.parse(raw).version]))
               );
-              return dirs.length === 1 ? versions[0][1] : versions;
+              const len = dirs.length;
+              if (len === 0) {
+                return false;
+              }
+              if (len === 1) {
+                return versions[0][1];
+              }
+              return versions;
             }
           })
         };
