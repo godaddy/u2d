@@ -6,7 +6,7 @@ import * as defaults from '../../src/constants/defaults';
 const cwd = process.cwd();
 
 const spawnCLISync = (args = []) => {
-  return spawnSync('npx', ['.', ...args], {
+  return spawnSync('npx', ['.', 'check', ...args], {
     cwd,
     shell: true,
     stdio: 'pipe',
@@ -16,7 +16,7 @@ const spawnCLISync = (args = []) => {
 
 describe('check', () => {
   describe('config', () => {
-    const getConfig = (args = []) => JSON.parse(spawnCLISync(['check', ...args, '--show-config']).stdout);
+    const getConfig = (args = []) => JSON.parse(spawnCLISync([...args, '--show-config']).stdout);
     test('applies u2d defaults', async () => {
       const config = await getConfig();
       expect(config).toEqual({
@@ -24,6 +24,7 @@ describe('check', () => {
         local: true,
         bail: false,
         silent: false,
+        dryRun: false,
         log: defaults.log,
         env: defaults.env,
         level: defaults.level,
@@ -53,6 +54,7 @@ describe('check', () => {
         local: false,
         bail: false,
         silent: false,
+        dryRun: false,
         log: defaults.log,
         env: defaults.env,
         level: defaults.level,
@@ -67,7 +69,7 @@ describe('check', () => {
 
   describe('run', () => {
     test('passes', () => {
-      const output = spawnCLISync(['check', '--local']).stderr;
+      const output = spawnCLISync(['--local']).stderr;
       expect(output).toContain('0 errors');
     });
   });

@@ -75,25 +75,47 @@ export namespace Options {
 
   export interface Provider {
     id?: ManagerType;
-    dirs(depth: Base['depth']);
+
+    dirs(depth: string | number);
+
     update(pkgs: Array<string>);
+
     view(pkg: string);
   }
 
-  export interface Base {
-    cwd: string,
+  interface Common {
+    cwd: string;
+    env: EnvironmentType;
+    manager: ManagerType;
+    log: keyof typeof Level;
     bail: boolean;
     silent: boolean;
     local: boolean;
-    depth: string | number;
-    dryRun: boolean;
-    log: keyof typeof Level;
-    env: EnvironmentType;
-    manager: ManagerType;
   }
 
-  export interface Input extends Base {
+  interface CommonInput extends Common {
     config: string | Partial<Config.Input>;
+    showConfig: boolean;
+  }
+
+  export interface Check extends Common {
+    depth: string | number;
+  }
+
+  export interface CheckInput extends Check, CommonInput {
+  }
+
+  export interface Update extends Common {
+    dryRun: boolean;
+  }
+
+  export interface UpdateInput extends Update, CommonInput {
+  }
+
+  export interface Base extends Check, Update {
+  }
+
+  export interface Input extends Base, CheckInput, UpdateInput {
   }
 
   export interface Export extends Base, Config.Export {
@@ -105,19 +127,19 @@ export namespace Options {
 }
 
 export interface Result {
-  name: string,
-  title: string,
-  message: string
-  meta: { [key: string]: any }
+  name: string;
+  title: string;
+  message: string;
+  meta: { [key: string]: any };
 }
 
 export interface Results {
-  skips: Array<Result>,
-  infos: Array<Result>,
-  errors: Array<Result>,
-  warnings: Array<Result>
+  skips: Array<Result>;
+  infos: Array<Result>;
+  errors: Array<Result>;
+  warnings: Array<Result>;
 }
 
 export interface Context extends Options.Export, Results {
-  action: ActionType
+  action: ActionType;
 }

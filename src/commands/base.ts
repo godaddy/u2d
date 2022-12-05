@@ -3,9 +3,10 @@ import { Command } from 'commander';
 import getMessage from '../parse/message';
 import fetchOptions from '../fetch/options';
 import * as defaults from '../constants/cliDefaults';
-import * as Options from '../options';
+import { depth as DepthOption } from '../options';
 
 import type { CommandOptions } from 'commander';
+import type { Options } from '../types';
 
 class BaseCommand extends Command {
   addCommand(cmd: Command, opts?: CommandOptions): this {
@@ -13,7 +14,7 @@ class BaseCommand extends Command {
   }
 
   action(fn: (...args: any[]) => (void | Promise<void>)): this {
-    return super.action(async (opts, ...args) => {
+    return super.action(async (opts: Options.CheckInput | Options.UpdateInput, ...args) => {
       let options;
       try {
         options = await fetchOptions(opts, defaults);
@@ -21,7 +22,7 @@ class BaseCommand extends Command {
           // Format data
           delete options.provider;
           if (options.depth === Infinity) {
-            options.depth = Options.depth.defaultValueDescription;
+            options.depth = DepthOption.defaultValueDescription;
           }
           // Print and exit
           process.stdout.write(JSON.stringify(options, null, '  ') + '\n');
