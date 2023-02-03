@@ -47,7 +47,7 @@
     "cosmiconfig": "^7.0.1",
     "execa": "^5.1.1",
     "listr2": "^4.0.5",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.6.8",
     "semver": "^7.3.7",
     "strip-ansi": "^6.0.1",
     "supports-esm": "^1.0.0"
