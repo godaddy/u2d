@@ -56,7 +56,7 @@ program
   .parse();
 
 let promise;
-const { showConfig, ...options } = { silent: false, ...program.opts() };
+const { showConfig = false, ...options } = { silent: false, ...program.opts() };
 for (const [key, value] of Object.entries(options)) {
   if (program.getOptionValueSource(key) === 'default') {
     // eslint-disable-next-line import/namespace
